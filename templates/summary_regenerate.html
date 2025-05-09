@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Regenerate Summary - {{ summary.document_name }}{% endblock %}
+
+{% block page_title %}Regenerate Summary{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-redo me-2"></i>Confirm Regeneration
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-info-circle fa-2x text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="alert-heading fs-5 fw-bold">Information</h5>
+                            <p class="mb-0">Are you sure you want to regenerate the summary for "<strong>{{ summary.document_name }}</strong>"? This will replace the current summary and reset any feedback.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h4 class="fs-5 fw-bold mb-0">Summary Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Document Name:</strong></p>
+                                <p>{{ summary.document_name }}</p>
+                            </div>
+                            <div class="col-md-3">
+                                <p class="mb-1"><strong>Project Type:</strong></p>
+                                <p>
+                                    {% if summary.project_type == 'ah' %}
+                                        <span class="badge bg-primary">AH PLLC</span>
+                                    {% elif summary.project_type == 'tlc' %}
+                                        <span class="badge bg-success">TLC S PLLC</span>
+                                    {% elif summary.project_type == 'sa' %}
+                                        <span class="badge bg-info">SA PLLC</span>
+                                    {% elif summary.project_type == 'lw' %}
+                                        <span class="badge bg-warning text-dark">LW PLLC</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ summary.project_type }}</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-3">
+                                <p class="mb-1"><strong>Current Status:</strong></p>
+                                <p>
+                                    <span class="badge {% if summary.status == 'completed' %}bg-success{% elif summary.status == 'corrected' %}bg-info{% elif summary.status == 'error' %}bg-danger{% elif summary.status == 'processing' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                        {{ summary.get_status_display }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        {% if summary.corrected_text %}
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Warning:</strong> This summary has corrected feedback that will be lost if you regenerate it.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'summary-detail' summary.id %}" class="btn btn-outline-secondary btn-lg px-4 me-md-2">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg px-4">
+                            <i class="fas fa-redo me-2"></i>Regenerate Summary
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

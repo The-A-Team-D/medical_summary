@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %}Medical Summarizer - Home{% endblock %}
+
+{% block page_title %}Welcome to Medical Summarizer{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h2 class="card-title fs-4 fw-bold text-primary">
+                    <i class="fas fa-robot me-2"></i>AI-Powered Medical Document Summarization
+                </h2>
+                <p class="card-text lead">
+                    Transform your medical PDFs into concise, structured summaries. Our AI system analyzes emergency room visit documents and generates accurate summaries with the exact format you need.
+                </p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                    <a href="{% url 'summarize' %}" class="btn btn-primary btn-lg px-4 me-md-2">
+                        <i class="fas fa-file-upload me-2"></i>Upload & Summarize
+                    </a>
+                    <a href="{% url 'summary-list' %}" class="btn btn-outline-primary btn-lg px-4">
+                        <i class="fas fa-list-alt me-2"></i>View Summaries
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Summary Statistics
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="p-3">
+                            <h5 class="fw-bold text-primary display-5">{{ total_summaries }}</h5>
+                            <p class="mb-0">Total</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3">
+                            <h5 class="fw-bold text-success display-5">{{ completed_summaries }}</h5>
+                            <p class="mb-0">Completed</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3">
+                            <h5 class="fw-bold text-info display-5">{{ corrected_summaries }}</h5>
+                            <p class="mb-0">Corrected</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{% url 'summary-list' %}" class="btn btn-sm btn-outline-primary">View All Summaries</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-folder-open me-2"></i>Example Data
+                </h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        AH PLLC
+                        <span class="badge bg-primary rounded-pill">{{ ah_examples }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        TLC S PLLC
+                        <span class="badge bg-primary rounded-pill">{{ tlc_examples }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        SA PLLC
+                        <span class="badge bg-primary rounded-pill">{{ sa_examples }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        LW PLLC
+                        <span class="badge bg-primary rounded-pill">{{ lw_examples }}</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{% url 'example-list' %}" class="btn btn-sm btn-outline-primary">Manage Examples</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-clock me-2"></i>Recent Summaries
+                </h3>
+            </div>
+            <div class="card-body">
+                {% if recent_summaries %}
+                    <ul class="list-group">
+                        {% for summary in recent_summaries %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ summary.document_name }}</strong>
+                                    <span class="d-block text-muted small">{{ summary.created_at|date:"M d, Y" }}</span>
+                                </div>
+                                <span class="badge {% if summary.status == 'completed' %}bg-success{% elif summary.status == 'corrected' %}bg-info{% elif summary.status == 'error' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                    {{ summary.get_status_display }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="text-center py-3">
+                        <p class="text-muted mb-0">No summaries yet</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer text-center">
+                <a href="{% url 'summarize' %}" class="btn btn-sm btn-outline-primary">Create New Summary</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-clipboard-list me-2"></i>How It Works
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                        <div class="p-3">
+                            <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                                <i class="fas fa-upload fa-2x p-3"></i>
+                            </div>
+                            <h4 class="fs-5 fw-bold">1. Upload</h4>
+                            <p class="mb-0">Upload your medical PDF document and select the project type</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                        <div class="p-3">
+                            <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                                <i class="fas fa-brain fa-2x p-3"></i>
+                            </div>
+                            <h4 class="fs-5 fw-bold">2. Process</h4>
+                            <p class="mb-0">Our AI analyzes the document using trained example data</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                        <div class="p-3">
+                            <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                                <i class="fas fa-file-alt fa-2x p-3"></i>
+                            </div>
+                            <h4 class="fs-5 fw-bold">3. Summarize</h4>
+                            <p class="mb-0">Receive a structured, formatted summary of the medical document</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="p-3">
+                            <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                                <i class="fas fa-check-circle fa-2x p-3"></i>
+                            </div>
+                            <h4 class="fs-5 fw-bold">4. Review</h4>
+                            <p class="mb-0">Review, edit, or provide feedback to improve future summaries</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feature-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+    }
+</style>
+{% endblock %} 

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ example_set.name }} - Example Set{% endblock %}
+
+{% block page_title %}Example Set: {{ example_set.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-folder-open me-2"></i>Example Set Details
+                </h3>
+                <div class="btn-group btn-group-sm">
+                    <a href="{% url 'example-add' example_set.id %}" class="btn btn-light">
+                        <i class="fas fa-plus me-2"></i>Add Example
+                    </a>
+                    <a href="{% url 'example-set-delete' example_set.id %}" class="btn btn-outline-light">
+                        <i class="fas fa-trash-alt me-2"></i>Delete Set
+                    </a>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <p class="mb-1"><strong>Name:</strong></p>
+                        <p>{{ example_set.name }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="mb-1"><strong>Project Type:</strong></p>
+                        <p>
+                            {% if example_set.project_type == 'ah' %}
+                                <span class="badge bg-primary">AH PLLC</span>
+                            {% elif example_set.project_type == 'tlc' %}
+                                <span class="badge bg-success">TLC S PLLC</span>
+                            {% elif example_set.project_type == 'sa' %}
+                                <span class="badge bg-info">SA PLLC</span>
+                            {% elif example_set.project_type == 'lw' %}
+                                <span class="badge bg-warning text-dark">LW PLLC</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ example_set.project_type }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="mb-1"><strong>Created:</strong></p>
+                        <p>{{ example_set.created_at|date:"F d, Y, g:i a" }}</p>
+                    </div>
+                </div>
+                
+                {% if example_set.description %}
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <p class="mb-1"><strong>Description:</strong></p>
+                            <p>{{ example_set.description }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <div class="row">
+                    <div class="col-12">
+                        <p class="mb-1"><strong>Examples:</strong> <span class="badge bg-secondary">{{ examples|length }}</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-list me-2"></i>Examples
+                </h3>
+                <a href="{% url 'example-add' example_set.id %}" class="btn btn-light btn-sm">
+                    <i class="fas fa-plus me-2"></i>Add Example
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if examples %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>PDF File</th>
+                                    <th>Summary File</th>
+                                    <th>Uploaded</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for example in examples %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ example.name }}</strong>
+                                        </td>
+                                        <td>
+                                            <a href="{{ example.pdf_file.url }}" target="_blank" class="text-decoration-none">
+                                                <i class="fas fa-file-pdf text-danger me-2"></i>{{ example.filename }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="{{ example.summary_file.url }}" target="_blank" class="text-decoration-none">
+                                                <i class="fas fa-file-alt text-primary me-2"></i>{{ example.summary_file.name|split:"/"|last }}
+                                            </a>
+                                        </td>
+                                        <td>{{ example.uploaded_at|date:"M d, Y" }}</td>
+                                        <td class="text-end">
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ example.pdf_file.url }}" target="_blank" class="btn btn-outline-primary" title="View PDF">
+                                                    <i class="fas fa-file-pdf"></i>
+                                                </a>
+                                                <a href="{{ example.summary_file.url }}" target="_blank" class="btn btn-outline-primary" title="View Summary">
+                                                    <i class="fas fa-file-alt"></i>
+                                                </a>
+                                                <form method="post" action="{% url 'example-delete' example.id %}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this example?');">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-file-alt fa-5x text-muted mb-3"></i>
+                        <h4 class="text-muted">No Examples Added Yet</h4>
+                        <p class="text-muted mb-4">Add examples to this set to improve the AI summarization results.</p>
+                        <a href="{% url 'example-add' example_set.id %}" class="btn btn-primary btn-lg px-4">
+                            <i class="fas fa-plus me-2"></i>Add Example
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

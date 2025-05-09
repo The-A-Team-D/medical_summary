@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}About - Medical Summarizer{% endblock %}
+
+{% block page_title %}About Medical Summarizer{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-info-circle me-2"></i>About the System
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <h4 class="fs-4 fw-bold mb-3">AI-Powered Medical Document Summarization</h4>
+                
+                <p class="lead">Medical Summarizer is a sophisticated AI system designed specifically for healthcare professionals to automate the creation of medical document summaries.</p>
+                
+                <p>Our system uses advanced natural language processing (NLP) and machine learning techniques to analyze medical documents, particularly emergency room visit records, and generate structured, accurate summaries that follow consistent formatting guidelines. The application is built on a foundation of few-shot learning, allowing it to adapt to different medical document formats through examples.</p>
+                
+                <h5 class="fs-5 fw-bold mt-4 mb-3">Key Features</h5>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card bg-light h-100">
+                            <div class="card-body">
+                                <h6 class="card-title fw-bold">
+                                    <i class="fas fa-robot text-primary me-2"></i>AI-Powered Summarization
+                                </h6>
+                                <p class="card-text">Leverages state-of-the-art language models to understand and extract key information from complex medical documents.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light h-100">
+                            <div class="card-body">
+                                <h6 class="card-title fw-bold">
+                                    <i class="fas fa-book-medical text-primary me-2"></i>Domain-Specific Knowledge
+                                </h6>
+                                <p class="card-text">Tailored specifically for medical terminology and emergency room documentation requirements.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light h-100">
+                            <div class="card-body">
+                                <h6 class="card-title fw-bold">
+                                    <i class="fas fa-brain text-primary me-2"></i>Few-Shot Learning
+                                </h6>
+                                <p class="card-text">Learns from examples to adapt to specific formatting requirements and improve over time.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light h-100">
+                            <div class="card-body">
+                                <h6 class="card-title fw-bold">
+                                    <i class="fas fa-chart-line text-primary me-2"></i>Continuous Improvement
+                                </h6>
+                                <p class="card-text">Incorporates user feedback to analyze and learn from corrections, improving future summaries.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="fs-5 fw-bold mt-4 mb-3">Technology Stack</h5>
+                
+                <ul class="list-group mb-4">
+                    <li class="list-group-item d-flex align-items-center">
+                        <span class="badge bg-primary me-3">Backend</span>
+                        <span>Django, Python</span>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <span class="badge bg-success me-3">AI Models</span>
+                        <span>OpenAI GPT, LangChain</span>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <span class="badge bg-info me-3">Frontend</span>
+                        <span>Bootstrap 5, jQuery, Chart.js</span>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <span class="badge bg-warning text-dark me-3">PDF Processing</span>
+                        <span>PyPDF, PikePDF</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-book me-2"></i>Documentation
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">User Guide</h5>
+                            <small><i class="fas fa-file-pdf text-danger"></i></small>
+                        </div>
+                        <p class="mb-1">Complete guide to using the Medical Summarizer system</p>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">API Documentation</h5>
+                            <small><i class="fas fa-file-code text-primary"></i></small>
+                        </div>
+                        <p class="mb-1">Integration guide for developers</p>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Example Sets Guide</h5>
+                            <small><i class="fas fa-file-alt text-success"></i></small>
+                        </div>
+                        <p class="mb-1">Learn how to create effective example sets</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-question-circle me-2"></i>Support
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-2">Contact Information</h5>
+                    <p><i class="fas fa-envelope text-primary me-2"></i> support@medical-summarizer.com</p>
+                    <p><i class="fas fa-phone text-primary me-2"></i> (555) 123-4567</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-2">Support Hours</h5>
+                    <p class="mb-1">Monday - Friday: 9:00 AM - 5:00 PM EST</p>
+                    <p>Weekend: Closed</p>
+                </div>
+                
+                <div class="d-grid">
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-ticket-alt me-2"></i>Open Support Ticket
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-code me-2"></i>System Architecture
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <img src="/static/img/architecture.png" alt="System Architecture Diagram" class="img-fluid rounded" style="max-height: 400px;">
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5 class="fw-bold mb-3">Input Processing</h5>
+                        <p>The system processes PDF medical documents, using password decryption when necessary. It extracts text content and prepares it for analysis.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5 class="fw-bold mb-3">AI Analysis</h5>
+                        <p>Our core engine uses example-based learning to understand document structure and content. It selects the most relevant examples and uses them to guide the summarization process.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5 class="fw-bold mb-3">Feedback Loop</h5>
+                        <p>User corrections are analyzed to identify error patterns and improve future summaries. The system tracks various accuracy metrics to measure improvement over time.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

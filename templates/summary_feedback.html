@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Provide Feedback - {{ summary.document_name }}{% endblock %}
+
+{% block page_title %}Edit & Provide Feedback{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-edit me-2"></i>Provide Feedback for: {{ summary.document_name }}
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-lightbulb fa-2x text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="alert-heading fs-5 fw-bold">Feedback Instructions</h5>
+                            <p class="mb-0">Edit the generated summary below to correct any errors or improve the content. Your edits will be analyzed to help improve future summaries. Focus on:</p>
+                            <ul class="mb-0 mt-2">
+                                <li>Missing or incorrect information</li>
+                                <li>Formatting issues</li>
+                                <li>Organizational structure</li>
+                                <li>Terminology corrections</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-group mb-4">
+                        <label for="{{ form.corrected_text.id_for_label }}" class="form-label fw-bold">
+                            <i class="fas fa-pen me-2"></i>Edit Summary
+                        </label>
+                        {{ form.corrected_text }}
+                        {% if form.corrected_text.help_text %}
+                            <div class="form-text">{{ form.corrected_text.help_text }}</div>
+                        {% endif %}
+                        {% if form.corrected_text.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.corrected_text.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'summary-detail' summary.id %}" class="btn btn-outline-secondary btn-lg px-4 me-md-2">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg px-4">
+                            <i class="fas fa-save me-2"></i>Submit Feedback
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-file-medical-alt me-2"></i>Original Generated Summary (Reference)
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="summary-text p-3 bg-light rounded border">
+                    {{ summary.summary_text|linebreaks }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    #id_corrected_text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 1rem;
+    }
+</style>
+{% endblock %} 

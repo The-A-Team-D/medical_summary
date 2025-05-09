@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload & Summarize - Medical Summarizer{% endblock %}
+
+{% block page_title %}Upload & Summarize{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-file-upload me-2"></i>Upload PDF Document
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data" id="upload-form">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <div class="upload-area p-4 border border-2 border-dashed rounded-3 text-center">
+                            <div class="upload-icon mb-3">
+                                <i class="fas fa-file-pdf fa-4x text-primary opacity-50"></i>
+                            </div>
+                            <h4 class="fs-5 fw-bold">Drag & Drop Your PDF Here</h4>
+                            <p class="text-muted mb-3">or click to browse your files</p>
+                            
+                            <div class="input-group mb-3 justify-content-center">
+                                <input type="file" class="form-control form-control-lg" name="pdf_file" id="id_pdf_file" accept=".pdf" style="max-width: 400px;">
+                            </div>
+                            
+                            <div id="selected-file" class="d-none mb-3">
+                                <div class="alert alert-info d-inline-flex align-items-center">
+                                    <i class="fas fa-file-pdf me-2"></i>
+                                    <span id="file-name"></span>
+                                    <button type="button" class="btn-close ms-3" id="remove-file"></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-text">Upload a PDF document (max 10MB).</div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="id_project_type" class="form-label fw-bold">Project Type</label>
+                            <select name="project_type" class="form-select form-select-lg" id="id_project_type">
+                                <option value="ah">AH PLLC</option>
+                                <option value="tlc">TLC S PLLC</option>
+                                <option value="sa">SA PLLC</option>
+                                <option value="lw">LW PLLC</option>
+                            </select>
+                            <div class="form-text">Select the project type for this document.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_pdf_password" class="form-label fw-bold">PDF Password (if needed)</label>
+                            <input type="password" name="pdf_password" class="form-control form-control-lg" id="id_pdf_password" placeholder="Leave blank if no password">
+                            <div class="form-text">Enter the password if the PDF is protected.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-info-circle fa-2x text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="alert-heading fs-5 fw-bold">Processing Information</h5>
+                                <p class="mb-0">Your document will be processed using our AI system. Depending on the size and complexity of the PDF, this may take a few minutes. You'll be redirected to the summary page where you can monitor progress.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg px-4 me-md-2">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg px-4" id="submit-btn" disabled>
+                            <i class="fas fa-robot me-2"></i>Summarize Document
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // File selection handling
+        $('#id_pdf_file').change(function() {
+            const file = this.files[0];
+            if (file) {
+                $('#file-name').text(file.name);
+                $('#selected-file').removeClass('d-none');
+                $('#submit-btn').prop('disabled', false);
+            } else {
+                $('#selected-file').addClass('d-none');
+                $('#submit-btn').prop('disabled', true);
+            }
+        });
+        
+        // Remove file
+        $('#remove-file').click(function() {
+            $('#id_pdf_file').val('');
+            $('#selected-file').addClass('d-none');
+            $('#submit-btn').prop('disabled', true);
+        });
+        
+        // Drag and drop functionality
+        const uploadArea = $('.upload-area');
+        
+        uploadArea.on('dragover', function(e) {
+            e.preventDefault();
+            $(this).addClass('border-primary');
+        });
+        
+        uploadArea.on('dragleave', function(e) {
+            e.preventDefault();
+            $(this).removeClass('border-primary');
+        });
+        
+        uploadArea.on('drop', function(e) {
+            e.preventDefault();
+            $(this).removeClass('border-primary');
+            
+            const file = e.originalEvent.dataTransfer.files[0];
+            if (file && file.type === 'application/pdf') {
+                // Create a new FileList object (since existing one is read-only)
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                
+                // Assign to file input and trigger change
+                $('#id_pdf_file')[0].files = dataTransfer.files;
+                $('#id_pdf_file').trigger('change');
+            }
+        });
+        
+        // Click to browse
+        uploadArea.on('click', function(e) {
+            if (!$(e.target).closest('input').length) {
+                $('#id_pdf_file').click();
+            }
+        });
+        
+        // Form submission
+        $('#upload-form').submit(function() {
+            $('#submit-btn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...');
+        });
+    });
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-area {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .upload-area:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+    
+    .border-dashed {
+        border-style: dashed !important;
+    }
+</style>
+{% endblock %}

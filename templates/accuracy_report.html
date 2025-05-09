@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block title %}Accuracy Trend Report - Medical Summarizer{% endblock %}
+
+{% block page_title %}Accuracy Trend Report{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Accuracy Trends Over Time
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                {% if summaries_with_accuracy|length > 1 %}
+                    <div class="chart-container" style="position: relative; height:400px;">
+                        <canvas id="accuracyTrendChart"></canvas>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Not enough data yet. Provide feedback on at least 2 summaries to see accuracy trends.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-puzzle-piece me-2"></i>Component Accuracy
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                {% if summaries_with_accuracy|length > 0 %}
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="componentChart"></canvas>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <p class="text-muted mb-0">No accuracy data available yet</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-clipboard-list me-2"></i>Accuracy Report
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                {% if trend_report and trend_report != "Not enough data to generate trends. Need at least 2 data points." %}
+                    <div class="markdown-content">
+                        {{ trend_report|markdown }}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-chart-line fa-5x text-muted mb-3"></i>
+                        <h4 class="text-muted">No Trend Report Available</h4>
+                        <p class="text-muted mb-4">{{ trend_report }}</p>
+                        <a href="{% url 'summary-list' %}" class="btn btn-primary btn-lg px-4">
+                            <i class="fas fa-edit me-2"></i>Provide Feedback on Summaries
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-list-alt me-2"></i>Summaries with Accuracy Metrics
+                </h3>
+            </div>
+            <div class="card-body p-0">
+                {% if summaries_with_accuracy %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Document Name</th>
+                                    <th>Project Type</th>
+                                    <th>Created</th>
+                                    <th>Accuracy Score</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for summary in summaries_with_accuracy %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'summary-detail' summary.id %}" class="text-decoration-none text-dark fw-bold">
+                                                {{ summary.document_name }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {% if summary.project_type == 'ah' %}
+                                                <span class="badge bg-primary">AH PLLC</span>
+                                            {% elif summary.project_type == 'tlc' %}
+                                                <span class="badge bg-success">TLC S PLLC</span>
+                                            {% elif summary.project_type == 'sa' %}
+                                                <span class="badge bg-info">SA PLLC</span>
+                                            {% elif summary.project_type == 'lw' %}
+                                                <span class="badge bg-warning text-dark">LW PLLC</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ summary.project_type }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ summary.created_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ summary.accuracy_score|floatformat:2|multiply:100 }}%;" aria-valuenow="{{ summary.accuracy_score|floatformat:2|multiply:100 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <span class="small">{{ summary.accuracy_score|floatformat:2|multiply:100 }}%</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'summary-detail' summary.id %}" class="btn btn-outline-primary" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'summary-feedback' summary.id %}" class="btn btn-outline-primary" title="Edit/Feedback">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <p class="text-muted mb-0">No summaries with accuracy metrics available yet</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if summaries_with_accuracy|length > 0 %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    $(document).ready(function() {
+        // Component Chart
+        const componentCtx = document.getElementById('componentChart').getContext('2d');
+        const componentChart = new Chart(componentCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Format Accuracy', 'Content Accuracy', 'Sections Accuracy'],
+                datasets: [{
+                    label: 'Average Component Accuracy',
+                    data: [0.75, 0.82, 0.68], // Example data - would come from backend
+                    fill: true,
+                    backgroundColor: 'rgba(78, 115, 223, 0.2)',
+                    borderColor: 'rgba(78, 115, 223, 1)',
+                    pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(78, 115, 223, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 1
+                    }
+                }
+            }
+        });
+        
+        {% if summaries_with_accuracy|length > 1 %}
+        // Trend Chart
+        const trendCtx = document.getElementById('accuracyTrendChart').getContext('2d');
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'], // Example data - would come from backend
+                datasets: [{
+                    label: 'Overall Accuracy',
+                    data: [0.65, 0.68, 0.72, 0.75, 0.78], // Example data - would come from backend
+                    fill: false,
+                    backgroundColor: 'rgba(28, 200, 138, 1)',
+                    borderColor: 'rgba(28, 200, 138, 1)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1,
+                        ticks: {
+                            callback: function(value) {
+                                return (value * 100) + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Accuracy Trend Over Time'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + (context.parsed.y * 100).toFixed(2) + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        {% endif %}
+    });
+</script>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .markdown-content {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    
+    .markdown-content h1,
+    .markdown-content h2,
+    .markdown-content h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+    
+    .markdown-content h1 {
+        font-size: 2rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        padding-bottom: 0.3rem;
+    }
+    
+    .markdown-content h2 {
+        font-size: 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        padding-bottom: 0.3rem;
+    }
+    
+    .markdown-content h3 {
+        font-size: 1.25rem;
+    }
+    
+    .markdown-content ul, 
+    .markdown-content ol {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+    
+    .markdown-content p {
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}

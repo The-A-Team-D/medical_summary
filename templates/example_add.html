@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Example - {{ example_set.name }}{% endblock %}
+
+{% block page_title %}Add Example to: {{ example_set.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-plus me-2"></i>Add Example
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info mb-4">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-info-circle fa-2x text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="alert-heading fs-5 fw-bold">Example Requirements</h5>
+                            <p class="mb-0">Each example requires two files:</p>
+                            <ul class="mb-0 mt-2">
+                                <li><strong>PDF File:</strong> The original medical document</li>
+                                <li><strong>Summary File:</strong> A text file (.txt) containing the correct summary format</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label for="pdf_file" class="form-label fw-bold">PDF Document</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-file-pdf text-danger"></i></span>
+                            <input type="file" class="form-control" id="pdf_file" name="pdf_file" accept=".pdf" required>
+                        </div>
+                        <div class="form-text">Upload the original PDF document.</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="summary_file" class="form-label fw-bold">Summary File</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-file-alt text-primary"></i></span>
+                            <input type="file" class="form-control" id="summary_file" name="summary_file" accept=".txt" required>
+                        </div>
+                        <div class="form-text">Upload the corresponding summary text file (.txt format).</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'example-set-detail' example_set.id %}" class="btn btn-outline-secondary btn-lg px-4 me-md-2">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg px-4">
+                            <i class="fas fa-save me-2"></i>Add Example
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

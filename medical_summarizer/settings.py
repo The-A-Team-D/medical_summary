@@ -141,8 +141,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-# OpenAI API Key - Use environment variable in production
-# OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', 'need to update')
+
+
 
 # Medical Summarizer Configuration
 MEDICAL_SUMMARIZER_CONFIG = {

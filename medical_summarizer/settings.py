@@ -142,7 +142,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # OpenAI API Key - Use environment variable in production
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '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')
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', 'need to update')
 
 # Medical Summarizer Configuration
 MEDICAL_SUMMARIZER_CONFIG = {

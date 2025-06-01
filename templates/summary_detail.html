@@ -1,154 +1,163 @@
+
+
+
 {% extends 'base.html' %}
-{% load custom_filters %}
 
 {% block title %}{{ summary.document_name }} - Medical Summarizer{% endblock %}
-
-{% block page_title %}Summary: {{ summary.document_name }}{% endblock %}
+{% load custom_filters %}
+{% block page_title %}Summary Detail{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h3 class="card-title fs-5 fw-bold mb-0">
-                    <i class="fas fa-file-medical-alt me-2"></i>Summary Details
-                </h3>
-                <div class="badge {% if summary.status == 'completed' %}bg-success{% elif summary.status == 'corrected' %}bg-info{% elif summary.status == 'error' %}bg-danger{% elif summary.status == 'processing' %}bg-warning{% else %}bg-secondary{% endif %} fs-6">
-                    {{ summary.get_status_display }}
-                </div>
-            </div>
-            <div class="card-body p-4">
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <p class="mb-1"><strong>Document Name:</strong></p>
-                        <p>{{ summary.document_name }}</p>
-                    </div>
-                    <div class="col-md-3">
-                        <p class="mb-1"><strong>Project Type:</strong></p>
-                        <p>{{ summary.get_project_type_display }}</p>
-                    </div>
-                    <div class="col-md-3">
-                        <p class="mb-1"><strong>Created:</strong></p>
-                        <p>{{ summary.created_at|date:"F d, Y, g:i a" }}</p>
-                    </div>
-                </div>
-                
-                {% if summary.accuracy_score %}
-                <div class="row mb-4">
-                    <div class="col-md-12">
-                        <p class="mb-1"><strong>Accuracy Score:</strong></p>
-                        <div class="progress" style="height: 25px;">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ summary.accuracy_score|multiply:100|floatformat:2 }}%;" aria-valuenow="{{ summary.accuracy_score|multiply:100|floatformat:2 }}" aria-valuemin="0" aria-valuemax="100">
-                                {{ summary.accuracy_score|multiply:100|floatformat:2 }}%
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                
-                <div class="action-buttons text-end mb-4">
-                    <div class="btn-group">
-                        <a href="{% url 'summary-download' summary.id %}" class="btn btn-outline-primary">
-                            <i class="fas fa-download me-2"></i>Download
-                        </a>
-                        <a href="{% url 'summary-feedback' summary.id %}" class="btn btn-outline-primary">
-                            <i class="fas fa-edit me-2"></i>Edit/Feedback
-                        </a>
-                        <a href="{% url 'summary-regenerate' summary.id %}" class="btn btn-outline-primary">
-                            <i class="fas fa-redo me-2"></i>Regenerate
-                        </a>
-                        <a href="{% url 'summary-delete' summary.id %}" class="btn btn-outline-danger">
-                            <i class="fas fa-trash-alt me-2"></i>Delete
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="summary-content">
-                    {% if summary.status == 'pending' or summary.status == 'processing' %}
-                        <div class="text-center py-5" id="loading-indicator">
-                            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <h4 class="text-primary mb-3">Processing Your Document</h4>
-                            <p class="text-muted mb-0">Please wait while our AI system analyzes and summarizes your document. This may take a few minutes.</p>
-                            <div class="progress mt-4" style="height: 10px;">
-                                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
-                            </div>
-                            <p class="mt-2 text-muted" id="status-message">Initializing...</p>
-                        </div>
-                    {% elif summary.status == 'error' %}
-                        <div class="alert alert-danger">
-                            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Error</h4>
-                            <p>There was a problem generating the summary for this document:</p>
-                            <pre class="mt-3 p-3 bg-light rounded">{{ summary.summary_text }}</pre>
-                        </div>
-                    {% else %}
-                        <div class="card mb-4">
-                            <div class="card-header bg-light">
-                                <h4 class="fs-5 fw-bold mb-0">Generated Summary</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="summary-text p-3 bg-light rounded border">
-                                    {{ summary.summary_text|linebreaks }}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        {% if summary.corrected_text %}
-                            <div class="card mb-4">
-                                <div class="card-header bg-light">
-                                    <h4 class="fs-5 fw-bold mb-0">Corrected Summary</h4>
-                                </div>
-                                <div class="card-body">
-                                    <div class="summary-text p-3 bg-light rounded border">
-                                        {{ summary.corrected_text|linebreaks }}
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'summary-list' %}">Summaries</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ summary.document_name }}</li>
+            </ol>
+        </nav>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
+    <div class="col-md-12">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h3 class="card-title fs-5 fw-bold mb-0">
-                    <i class="fas fa-file-pdf me-2"></i>Original Document
+                    <i class="fas fa-file-alt me-2"></i>{{ summary.document_name }}
                 </h3>
+                <span id="status-badge" class="badge {% if summary.status == 'pending' %}bg-secondary{% elif summary.status == 'processing' %}bg-warning text-dark{% elif summary.status == 'completed' %}bg-success{% elif summary.status == 'corrected' %}bg-info{% elif summary.status == 'error' %}bg-danger{% endif %}">
+                    {{ summary.status|title }}
+                </span>
             </div>
-            <div class="card-body p-4">
-                {% if summary.original_text %}
-                    <div class="accordion" id="originalDocumentAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                                    View Extracted Text
-                                </button>
-                            </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#originalDocumentAccordion">
-                                <div class="accordion-body">
-                                    <pre class="original-text p-3 bg-light rounded border" style="max-height: 500px; overflow-y: auto;">{{ summary.original_text }}</pre>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Project Type</label>
+                            <div>
+                                <span class="badge bg-primary">
+                                    {% if summary.project_type == 'ah' %}
+                                        AH PLLC
+                                    {% elif summary.project_type == 'tlc' %}
+                                        TLC S PLLC
+                                    {% elif summary.project_type == 'sa' %}
+                                        SA PLLC
+                                    {% elif summary.project_type == 'lw' %}
+                                        LW PLLC
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% if user.is_superuser %}
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">User</label>
+                            <div>
+                                <span class="badge bg-dark">{{ summary.user.username }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Created</label>
+                            <div>{{ summary.created_at|date:"F d, Y H:i:s" }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="loading-container" class="{% if summary.status != 'processing' and summary.status != 'pending' %}d-none{% endif %}">
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h4 class="fs-5">Processing Your Document</h4>
+                        <p class="text-muted">This may take a few minutes. Please wait...</p>
+                        <div class="progress mb-3">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="error-container" class="{% if summary.status != 'error' %}d-none{% endif %}">
+                    <div class="alert alert-danger">
+                        <h4 class="alert-heading fs-5">Error Processing Document</h4>
+                        <p>{{ summary.summary_text }}</p>
+                        <hr>
+                        <div class="d-flex justify-content-end">
+                            <a href="{% url 'summary-regenerate' summary.id %}" class="btn btn-danger">
+                                <i class="fas fa-redo-alt me-2"></i>Try Again
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="summary-container" class="{% if summary.status != 'completed' and summary.status != 'corrected' %}d-none{% endif %}">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Summary</label>
+                        <div class="p-3 bg-light rounded border">
+                            <div class="summary-content">
+                                {{ summary.summary_text|linebreaksbr }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if summary.status == 'corrected' %}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Corrected Summary</label>
+                        <div class="p-3 bg-light rounded border">
+                            <div class="summary-content">
+                                {{ summary.corrected_text|linebreaksbr }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if summary.accuracy_score %}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Accuracy Score</label>
+                        <div class="p-3 bg-light rounded border">
+                            <div class="progress" style="height: 30px;">
+                                <div class="progress-bar {% if summary.accuracy_score < 0.7 %}bg-danger{% elif summary.accuracy_score < 0.9 %}bg-warning{% else %}bg-success{% endif %}" 
+                                    role="progressbar" 
+                                    style="width: {{ summary.accuracy_score|floatformat:2|multiply:100 }}%;" 
+                                    aria-valuenow="{{ summary.accuracy_score|floatformat:2|multiply:100 }}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="100">
+                                    {{ summary.accuracy_score|floatformat:2|multiply:100 }}%
                                 </div>
                             </div>
                         </div>
                     </div>
-                {% else %}
-                    <div class="text-center py-3">
-                        <p class="text-muted mb-0">Document text not yet extracted</p>
-                    </div>
-                {% endif %}
-                
-                <div class="mt-3">
-                    <p class="mb-1"><strong>Original PDF:</strong></p>
-                    <p class="mb-0">
-                        <i class="fas fa-file-pdf me-2 text-danger"></i>
-                        <a href="{{ summary.pdf_file.url }}" target="_blank">{{ summary.filename }}</a>
-                    </p>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="btn-group">
+                    <a href="{% url 'summary-list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                    </a>
+                    
+                    {% if summary.status == 'completed' or summary.status == 'corrected' %}
+                    <a href="{% url 'summary-download' summary.id %}" class="btn btn-outline-success">
+                        <i class="fas fa-download me-2"></i>Download
+                    </a>
+                    
+                    <a href="{% url 'summary-feedback' summary.id %}" class="btn btn-outline-info">
+                        <i class="fas fa-comment-alt me-2"></i>Provide Feedback
+                    </a>
+                    
+                    <a href="{% url 'summary-regenerate' summary.id %}" class="btn btn-outline-warning">
+                        <i class="fas fa-redo-alt me-2"></i>Regenerate
+                    </a>
+                    {% endif %}
+                    
+                    <a href="{% url 'summary-delete' summary.id %}" class="btn btn-outline-danger">
+                        <i class="fas fa-trash me-2"></i>Delete
+                    </a>
                 </div>
             </div>
         </div>
@@ -157,68 +166,34 @@
 {% endblock %}
 
 {% block extra_js %}
-{% if summary.status == 'pending' or summary.status == 'processing' %}
 <script>
     $(document).ready(function() {
-        let progress = 0;
-        const statusMessages = [
-            "Initializing...",
-            "Reading PDF document...",
-            "Extracting text content...",
-            "Loading example data...",
-            "Analyzing document structure...",
-            "Generating summary...",
-            "Formatting output...",
-            "Almost done..."
-        ];
-        let messageIndex = 0;
-        
-        // Update progress bar
-        function updateProgress() {
-            if (progress < 95) {
-                progress += Math.floor(Math.random() * 10) + 1;
-                if (progress > 95) progress = 95;
-                
-                $('#progress-bar').css('width', progress + '%');
-                
-                // Update status message periodically
-                if (progress > messageIndex * 12) {
-                    messageIndex = Math.min(messageIndex + 1, statusMessages.length - 1);
-                    $('#status-message').text(statusMessages[messageIndex]);
-                }
-            }
-        }
-        
-        // Check summary status
+        // Check status every 5 seconds if the summary is processing or pending
+        {% if summary.status == 'processing' or summary.status == 'pending' %}
         function checkStatus() {
             $.ajax({
                 url: '{% url "summary-status" summary.id %}',
-                type: 'GET',
+                method: 'GET',
                 dataType: 'json',
                 success: function(data) {
-                    if (data.status === 'completed' || data.status === 'corrected') {
-                        // Summary is ready, reload the page
-                        window.location.reload();
-                    } else if (data.status === 'error') {
-                        // Error occurred, reload the page
-                        window.location.reload();
-                    } else {
-                        // Still processing, update progress and check again
-                        updateProgress();
-                        setTimeout(checkStatus, 3000);
+                    if (data.status !== '{{ summary.status }}') {
+                        // Status has changed, reload the page
+                        location.reload();
+                    } else if (data.status === 'processing' || data.status === 'pending') {
+                        // Still processing, check again in 5 seconds
+                        setTimeout(checkStatus, 5000);
                     }
                 },
                 error: function() {
-                    // Error occurred, try again
-                    setTimeout(checkStatus, 5000);
+                    // Error occurred, check again in 10 seconds
+                    setTimeout(checkStatus, 10000);
                 }
             });
         }
         
-        // Start checking status
-        updateProgress();
-        setTimeout(checkStatus, 3000);
+        // Start checking
+        checkStatus();
+        {% endif %}
     });
 </script>
-{% endif %}
 {% endblock %}

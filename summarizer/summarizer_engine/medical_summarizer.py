@@ -136,10 +136,10 @@ class MedicalSummarizer:
         Your goal is to create a summary for what made patient come to emergency room visit document. Make sure pain level will be more than 5 always, as this is emergency room visit. Also do not mention reason for emergency room visit as 'influenza-like illness', as this is not the critical reason.
         """
         
-        # Add any adaptive prompting from feedback
-        self.feedback_learner.scan_for_new_corrections()
-        improvement_prompt = self.feedback_learner.get_improvement_prompt()
-        system_prompt += improvement_prompt
+        # # Add any adaptive prompting from feedback
+        # self.feedback_learner.scan_for_new_corrections()
+        # improvement_prompt = self.feedback_learner.get_improvement_prompt()
+        # system_prompt += improvement_prompt
         
         return system_prompt
     

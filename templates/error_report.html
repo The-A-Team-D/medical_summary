@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load custom_filters %}
 {% block title %}Error Analysis Report - Medical Summarizer{% endblock %}
 
 {% block page_title %}Error Analysis Report{% endblock %}
@@ -88,7 +88,7 @@
             data: {
                 labels: [
                     {% for error_type in error_types %}
-                        '{{ error_type.error_type|capfirst|replace:"_":" " }}',
+                        '{{ error_type.error_type|capfirst|replace:"_: " }}',
                     {% endfor %}
                 ],
                 datasets: [{

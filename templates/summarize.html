@@ -1,3 +1,6 @@
+
+
+
 {% extends 'base.html' %}
 
 {% block title %}Upload & Summarize - Medical Summarizer{% endblock %}
@@ -10,7 +13,7 @@
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
                 <h3 class="card-title fs-5 fw-bold mb-0">
-                    <i class="fas fa-file-upload me-2"></i>Upload PDF Document
+                    <i class="fas fa-file-upload me-2"></i>Upload PDF Documents
                 </h3>
             </div>
             <div class="card-body p-4">
@@ -22,39 +25,46 @@
                             <div class="upload-icon mb-3">
                                 <i class="fas fa-file-pdf fa-4x text-primary opacity-50"></i>
                             </div>
-                            <h4 class="fs-5 fw-bold">Drag & Drop Your PDF Here</h4>
+                            <h4 class="fs-5 fw-bold">Drag & Drop Your PDF Files Here</h4>
                             <p class="text-muted mb-3">or click to browse your files</p>
                             
                             <div class="input-group mb-3 justify-content-center">
-                                <input type="file" class="form-control form-control-lg" name="pdf_file" id="id_pdf_file" accept=".pdf" style="max-width: 400px;">
+                                <input type="file" class="form-control form-control-lg" name="pdf_files" id="id_pdf_files" accept=".pdf" multiple style="max-width: 400px;">
                             </div>
                             
-                            <div id="selected-file" class="d-none mb-3">
-                                <div class="alert alert-info d-inline-flex align-items-center">
-                                    <i class="fas fa-file-pdf me-2"></i>
-                                    <span id="file-name"></span>
-                                    <button type="button" class="btn-close ms-3" id="remove-file"></button>
+                            <div id="selected-files" class="d-none mb-3">
+                                <div class="alert alert-info">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>Selected Files:</strong>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="remove-all-files">
+                                            <i class="fas fa-times me-1"></i>Remove All
+                                        </button>
+                                    </div>
+                                    <ul id="file-list" class="list-group">
+                                        <!-- Files will be listed here -->
+                                    </ul>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-text">Upload a PDF document (max 10MB).</div>
+                        <div class="form-text">Upload PDF documents (max 10MB each, supports multiple files at once).</div>
                     </div>
                     
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <label for="id_project_type" class="form-label fw-bold">Project Type</label>
-                            <select name="project_type" class="form-select form-select-lg" id="id_project_type">
-                                <option value="ah">AH PLLC</option>
-                                <option value="tlc">TLC S PLLC</option>
-                                <option value="sa">SA PLLC</option>
-                                <option value="lw">LW PLLC</option>
-                            </select>
-                            <div class="form-text">Select the project type for this document.</div>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i> Project type will be automatically determined from the filename.
+                                <ul class="mb-0 mt-2">
+                                    <li>For AH PLLC: Include "AH" in the filename</li>
+                                    <li>For TLC S PLLC: Include "TLC" in the filename</li>
+                                    <li>For SA PLLC: Include "SA" in the filename</li>
+                                    <li>For LW PLLC: Include "LW" in the filename</li>
+                                </ul>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label for="id_pdf_password" class="form-label fw-bold">PDF Password (if needed)</label>
                             <input type="password" name="pdf_password" class="form-control form-control-lg" id="id_pdf_password" placeholder="Leave blank if no password">
-                            <div class="form-text">Enter the password if the PDF is protected.</div>
+                            <div class="form-text">Enter the password if the PDFs are protected (same password for all files).</div>
                         </div>
                     </div>
                     
@@ -65,7 +75,7 @@
                             </div>
                             <div>
                                 <h5 class="alert-heading fs-5 fw-bold">Processing Information</h5>
-                                <p class="mb-0">Your document will be processed using our AI system. Depending on the size and complexity of the PDF, this may take a few minutes. You'll be redirected to the summary page where you can monitor progress.</p>
+                                <p class="mb-0">Your documents will be processed in the background using our AI system. Depending on the size and complexity of the PDFs, this may take a few minutes. You'll be redirected to the summary list page where you can monitor the progress of each file.</p>
                             </div>
                         </div>
                     </div>
@@ -75,7 +85,7 @@
                             <i class="fas fa-times me-2"></i>Cancel
                         </a>
                         <button type="submit" class="btn btn-primary btn-lg px-4" id="submit-btn" disabled>
-                            <i class="fas fa-robot me-2"></i>Summarize Document
+                            <i class="fas fa-robot me-2"></i>Summarize Documents
                         </button>
                     </div>
                 </form>
@@ -89,24 +99,84 @@
 <script>
     $(document).ready(function() {
         // File selection handling
-        $('#id_pdf_file').change(function() {
-            const file = this.files[0];
-            if (file) {
-                $('#file-name').text(file.name);
-                $('#selected-file').removeClass('d-none');
+        $('#id_pdf_files').change(function() {
+            const files = this.files;
+            if (files.length > 0) {
+                // Clear the list
+                $('#file-list').empty();
+                
+                // Add each file to the list
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const fileItem = $(`
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-file-pdf text-danger me-2"></i>
+                                <span>${file.name}</span>
+                                <small class="text-muted ms-2">(${(file.size / 1024 / 1024).toFixed(2)} MB)</small>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-file" data-index="${i}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </li>
+                    `);
+                    $('#file-list').append(fileItem);
+                }
+                
+                // Show the files list
+                $('#selected-files').removeClass('d-none');
+                
+                // Enable the submit button
                 $('#submit-btn').prop('disabled', false);
+                
+                // Update the button text based on file count
+                updateSubmitButtonText(files.length);
             } else {
-                $('#selected-file').addClass('d-none');
+                // Hide the files list and disable the submit button
+                $('#selected-files').addClass('d-none');
                 $('#submit-btn').prop('disabled', true);
+                updateSubmitButtonText(0);
             }
         });
         
-        // Remove file
-        $('#remove-file').click(function() {
-            $('#id_pdf_file').val('');
-            $('#selected-file').addClass('d-none');
-            $('#submit-btn').prop('disabled', true);
+        // Remove a single file
+        $(document).on('click', '.remove-file', function() {
+            const index = $(this).data('index');
+            const fileInput = $('#id_pdf_files')[0];
+            
+            // Create a new FileList without the removed file
+            const dataTransfer = new DataTransfer();
+            for (let i = 0; i < fileInput.files.length; i++) {
+                if (i !== index) {
+                    dataTransfer.items.add(fileInput.files[i]);
+                }
+            }
+            
+            // Update the file input
+            fileInput.files = dataTransfer.files;
+            
+            // Trigger the change event to update the UI
+            $(fileInput).trigger('change');
         });
+        
+        // Remove all files
+        $('#remove-all-files').click(function() {
+            $('#id_pdf_files').val('');
+            $('#selected-files').addClass('d-none');
+            $('#submit-btn').prop('disabled', true);
+            updateSubmitButtonText(0);
+        });
+        
+        // Update submit button text based on file count
+        function updateSubmitButtonText(fileCount) {
+            if (fileCount === 0) {
+                $('#submit-btn').html('<i class="fas fa-robot me-2"></i>Summarize Documents');
+            } else if (fileCount === 1) {
+                $('#submit-btn').html('<i class="fas fa-robot me-2"></i>Summarize 1 Document');
+            } else {
+                $('#submit-btn').html(`<i class="fas fa-robot me-2"></i>Summarize ${fileCount} Documents`);
+            }
+        }
         
         // Drag and drop functionality
         const uploadArea = $('.upload-area');
@@ -125,22 +195,33 @@
             e.preventDefault();
             $(this).removeClass('border-primary');
             
-            const file = e.originalEvent.dataTransfer.files[0];
-            if (file && file.type === 'application/pdf') {
-                // Create a new FileList object (since existing one is read-only)
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                
-                // Assign to file input and trigger change
-                $('#id_pdf_file')[0].files = dataTransfer.files;
-                $('#id_pdf_file').trigger('change');
+            const fileInput = $('#id_pdf_files')[0];
+            const dataTransfer = new DataTransfer();
+            
+            // Add existing files
+            if (fileInput.files) {
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    dataTransfer.items.add(fileInput.files[i]);
+                }
             }
+            
+            // Add dropped files (if they are PDFs)
+            const droppedFiles = e.originalEvent.dataTransfer.files;
+            for (let i = 0; i < droppedFiles.length; i++) {
+                if (droppedFiles[i].type === 'application/pdf') {
+                    dataTransfer.items.add(droppedFiles[i]);
+                }
+            }
+            
+            // Assign to file input and trigger change
+            fileInput.files = dataTransfer.files;
+            $(fileInput).trigger('change');
         });
         
         // Click to browse
         uploadArea.on('click', function(e) {
-            if (!$(e.target).closest('input').length) {
-                $('#id_pdf_file').click();
+            if (!$(e.target).closest('input, button').length) {
+                $('#id_pdf_files').click();
             }
         });
         
@@ -165,6 +246,11 @@
     
     .border-dashed {
         border-style: dashed !important;
+    }
+    
+    #file-list {
+        max-height: 300px;
+        overflow-y: auto;
     }
 </style>
 {% endblock %}

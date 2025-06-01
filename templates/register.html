@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block title %}Create New User - Medical Summarizer{% endblock %}
+
+{% block page_title %}Create New User{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title fs-5 fw-bold mb-0">
+                    <i class="fas fa-user-plus me-2"></i>Create New User Account
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <!-- Info Alert -->
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Admin Access:</strong> Only superusers can create new user accounts. 
+                    Select the appropriate access level for the new user.
+                </div>
+
+                <!-- Form Errors -->
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>Please correct the following errors:</strong>
+                    <ul class="mb-0 mt-2">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>
+                                    {% if field != '__all__' %}
+                                        <strong>{{ field|title }}:</strong> 
+                                    {% endif %}
+                                    {{ error }}
+                                </li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Username Field -->
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label fw-bold">
+                            <i class="fas fa-user me-1"></i>Username
+                        </label>
+                        <input type="text" 
+                               name="username" 
+                               class="form-control form-control-lg {% if form.username.errors %}is-invalid{% endif %}" 
+                               id="id_username" 
+                               value="{{ form.username.value|default:'' }}"
+                               required 
+                               autofocus
+                               placeholder="Enter username">
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.username.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Username must be unique and contain only letters, numbers, and @/./+/-/_ characters.</div>
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label fw-bold">
+                            <i class="fas fa-envelope me-1"></i>Email Address
+                        </label>
+                        <input type="email" 
+                               name="email" 
+                               class="form-control form-control-lg {% if form.email.errors %}is-invalid{% endif %}" 
+                               id="id_email" 
+                               value="{{ form.email.value|default:'' }}"
+                               placeholder="Enter email address">
+                        {% if form.email.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.email.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- First Name -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_first_name" class="form-label fw-bold">
+                                <i class="fas fa-id-card me-1"></i>First Name
+                            </label>
+                            <input type="text" 
+                                   name="first_name" 
+                                   class="form-control form-control-lg" 
+                                   id="id_first_name" 
+                                   value="{{ form.first_name.value|default:'' }}"
+                                   placeholder="First name">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_last_name" class="form-label fw-bold">
+                                <i class="fas fa-id-card me-1"></i>Last Name
+                            </label>
+                            <input type="text" 
+                                   name="last_name" 
+                                   class="form-control form-control-lg" 
+                                   id="id_last_name" 
+                                   value="{{ form.last_name.value|default:'' }}"
+                                   placeholder="Last name">
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="mb-3">
+                        <label for="id_password1" class="form-label fw-bold">
+                            <i class="fas fa-lock me-1"></i>Password
+                        </label>
+                        <input type="password" 
+                               name="password1" 
+                               class="form-control form-control-lg {% if form.password1.errors %}is-invalid{% endif %}" 
+                               id="id_password1" 
+                               required
+                               placeholder="Enter password">
+                        {% if form.password1.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.password1.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Password must contain at least 8 characters and cannot be entirely numeric.
+                        </div>
+                    </div>
+
+                    <!-- Confirm Password Field -->
+                    <div class="mb-3">
+                        <label for="id_password2" class="form-label fw-bold">
+                            <i class="fas fa-lock me-1"></i>Confirm Password
+                        </label>
+                        <input type="password" 
+                               name="password2" 
+                               class="form-control form-control-lg {% if form.password2.errors %}is-invalid{% endif %}" 
+                               id="id_password2" 
+                               required
+                               placeholder="Confirm password">
+                        {% if form.password2.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.password2.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- User Type Selection -->
+                    <div class="mb-4">
+                        <label for="id_user_type" class="form-label fw-bold">
+                            <i class="fas fa-user-cog me-1"></i>User Access Level
+                        </label>
+                        <select name="user_type" 
+                                class="form-select form-select-lg {% if form.user_type.errors %}is-invalid{% endif %}" 
+                                id="id_user_type" 
+                                required>
+                            <option value="">Select access level...</option>
+                            <option value="admin" {% if form.user_type.value == 'admin' %}selected{% endif %}>
+                                🔑 Administrator - Full system access (superuser)
+                            </option>
+                            <option value="staff" {% if form.user_type.value == 'staff' %}selected{% endif %}>
+                                👤 Staff User - Limited access (regular user)
+                            </option>
+                        </select>
+                        {% if form.user_type.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.user_type.errors.0 }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            <strong>Administrator:</strong> Can create users, access all summaries, and view reports.<br>
+                            <strong>Staff User:</strong> Can only access their own summaries and basic features.
+                        </div>
+                    </div>
+
+                    <!-- Active Status -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   name="is_active" 
+                                   id="id_is_active" 
+                                   {% if form.is_active.value|default:True %}checked{% endif %}>
+                            <label class="form-check-label fw-bold" for="id_is_active">
+                                <i class="fas fa-toggle-on me-1"></i>Account Active
+                            </label>
+                            <div class="form-text">Uncheck to create an inactive account that cannot log in.</div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Create User Account
+                        </button>
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Recently Created Users -->
+        {% if recent_users %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-users me-2"></i>Recently Created Users
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Access Level</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recent_users %}
+                            <tr>
+                                <td>
+                                    <i class="fas fa-user me-1"></i>{{ user.username }}
+                                </td>
+                                <td>{{ user.get_full_name|default:"-" }}</td>
+                                <td>
+                                    {% if user.is_superuser %}
+                                        <span class="badge bg-warning text-dark">Administrator</span>
+                                    {% else %}
+                                        <span class="badge bg-info">Staff</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- User Management Tips -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-lightbulb me-2 text-warning"></i>User Management Tips
+                </h5>
+                <ul class="mb-0">
+                    <li><strong>Administrator accounts</strong> have full access to create users, view all summaries, and access system reports.</li>
+                    <li><strong>Staff accounts</strong> can only access their own summaries and cannot perform administrative tasks.</li>
+                    <li>You can deactivate accounts later if needed without deleting them.</li>
+                    <li>Users will need to be provided with their login credentials separately.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

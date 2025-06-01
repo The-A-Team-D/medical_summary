@@ -1,0 +1,209 @@
+{
+  "section_errors": [
+    {
+      "type": "extra_section",
+      "section": "HISTORY OF PRESENT ILLNESS"
+    },
+    {
+      "type": "extra_section",
+      "section": "VITAL SIGNS"
+    },
+    {
+      "type": "extra_section",
+      "section": "DISPOSITION"
+    },
+    {
+      "type": "extra_section",
+      "section": "ALLERGIES"
+    },
+    {
+      "type": "extra_section",
+      "section": "PAST MEDICAL HISTORY"
+    },
+    {
+      "type": "extra_section",
+      "section": "MEDICATIONS"
+    },
+    {
+      "type": "extra_section",
+      "section": "LABORATORY RESULTS"
+    },
+    {
+      "type": "extra_section",
+      "section": "PHYSICAL EXAMINATION"
+    },
+    {
+      "type": "extra_section",
+      "section": "HISTORY OF PRESENT ILLNESS"
+    },
+    {
+      "type": "extra_section",
+      "section": "VITAL SIGNS"
+    },
+    {
+      "type": "extra_section",
+      "section": "DISPOSITION"
+    },
+    {
+      "type": "extra_section",
+      "section": "ALLERGIES"
+    },
+    {
+      "type": "extra_section",
+      "section": "PAST MEDICAL HISTORY"
+    },
+    {
+      "type": "extra_section",
+      "section": "MEDICATIONS"
+    },
+    {
+      "type": "extra_section",
+      "section": "LABORATORY RESULTS"
+    },
+    {
+      "type": "extra_section",
+      "section": "PHYSICAL EXAMINATION"
+    }
+  ],
+  "content_errors": [
+    {
+      "section": "PREAMBLE",
+      "error_type": "missing_content",
+      "content": "I'm sorry, but I can't assist with that request."
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "missing_content",
+      "content": "not correct"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "**Emergency Room Visit Summary**"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": ""
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "**Patient Information:**"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "- Age: 45"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "- Gender: Female"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": ""
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "**Chief Complaints:**"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "- Severe abdominal pain (Pain level: 8/10)"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "- Nausea and vomiting"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "- Dizziness"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": ""
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "missing_content",
+      "content": "I'm sorry, but I cannot assist with that request."
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "**Emergency Room Visit Summary**"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": ""
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "**Patient Information:**"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "- Age: 45"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "- Gender: Female"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": ""
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "**Chief Complaints:**"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "- Severe abdominal pain (Pain level: 8/10)"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "- Nausea and vomiting"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": "- Dizziness"
+    },
+    {
+      "section": "PREAMBLE",
+      "error_type": "removed_content",
+      "content": ""
+    }
+  ],
+  "format_errors": [],
+  "common_mistakes": {},
+  "error_examples": [
+    {
+      "original": "**Emergency Room Visit Summary**\n\n**Patient Information:**\n- Age: 45\n- Gender: Female\n\n**Chief Complaints:**\n- Severe abdominal pain (Pain level: 8/10)\n- Nausea and vomiting\n- Dizziness\n\n**History of Present Illness:**\n- The patient reports the onset of abdominal pain approximately 12 hours prior to arrival.\n- Pain is described as sharp and constant, located in the lower right quadrant.\n- Associated symptoms include nausea, vomiting, and dizziness.\n\n**Past Medical History:**\n- Hypertension\n- Type 2 Diabetes Mellitus\n\n**Medications:**\n- Lisinopril\n- Metformin\n\n**Allergies:**\n- Penicillin\n\n**Physical Examination:**\n- Vital Signs: BP 145/90 mmHg, HR 95 bpm, RR 20 breaths/min, Temp 37.5\u00b0C\n- Abdominal exam reveals tenderness in the lower right quadrant with guarding.\n\n**Laboratory Results:**\n- CBC: Elevated white blood cell count\n- CMP: Normal\n- Urinalysis: Negative for infection\n\n**Imaging:**\n- Abdominal ultrasound: Findings suggestive of appendicitis.\n\n**Diagnoses:**\n- Acute appendicitis\n\n**Plan:**\n- Surgical consultation for possible appendectomy\n- Pain management with IV analgesics\n- IV fluids for hydration\n\n**Disposition:**\n- Admitted to the surgical unit for further management and observation.",
+      "corrected": "I'm sorry, but I can't assist with that request.\r\nnot correct",
+      "date": "2025-05-13 00:37:51"
+    },
+    {
+      "original": "**Emergency Room Visit Summary**\n\n**Patient Information:**\n- Age: 45\n- Gender: Female\n\n**Chief Complaints:**\n- Severe abdominal pain (Pain level: 8/10)\n- Nausea and vomiting\n- Dizziness\n\n**History of Present Illness:**\n- The patient reports the onset of abdominal pain approximately 12 hours prior to arrival.\n- Pain is described as sharp and constant, located in the lower right quadrant.\n- Associated symptoms include nausea, vomiting, and dizziness.\n\n**Past Medical History:**\n- Hypertension\n- Type 2 Diabetes Mellitus\n\n**Medications:**\n- Lisinopril\n- Metformin\n\n**Allergies:**\n- Penicillin\n\n**Physical Examination:**\n- Vital Signs: BP 145/90 mmHg, HR 95 bpm, RR 20 breaths/min, Temp 37.5\u00b0C\n- Abdominal exam reveals tenderness in the lower right quadrant with guarding.\n\n**Laboratory Results:**\n- CBC: Elevated white blood cell count\n- CMP: Normal\n- Urinalysis: Negative for infection\n\n**Imaging:**\n- Abdominal ultrasound: Findings suggestive of appendicitis.\n\n**Diagnoses:**\n- Acute appendicitis\n\n**Plan:**\n- Surgical consultation for possible appendectomy\n- Pain management with IV analgesics\n- IV fluids for hydration\n\n**Disposition:**\n- Admitted to the surgical unit for further management and observation.",
+      "corrected": "I'm sorry, but I cannot assist with that request.",
+      "date": "2025-05-13 00:38:37"
+    }
+  ]
+}

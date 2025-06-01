@@ -7,10 +7,11 @@ For more information on this file, see
 https://docs.djangoproject.com/en/5.1/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/5.1/ref/settings/
+https://docs.djangoproject.com/en/5.1/ref/settings/   
 """
 import os
 from pathlib import Path
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -141,7 +142,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # OpenAI API Key - Use environment variable in production
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', 'your-open-api-key')
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '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')
 
 # Medical Summarizer Configuration
 MEDICAL_SUMMARIZER_CONFIG = {
@@ -161,3 +162,36 @@ for directory in [MEDICAL_SUMMARIZER_CONFIG['temp_dir'],
                  os.path.join(MEDICAL_SUMMARIZER_CONFIG['feedback_dir'], 'original'),
                  os.path.join(MEDICAL_SUMMARIZER_CONFIG['feedback_dir'], 'corrected')]:
     os.makedirs(directory, exist_ok=True)
+
+
+# Login/Logout URLs
+# LOGIN_URL = '/accounts/login/'
+# LOGIN_REDIRECT_URL = '/'
+# LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',  # Bootstrap uses 'danger' instead of 'error'
+}
+
+# Authentication settings
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'
+
+# Celery Configuration
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+# Redis Configuration (for Celery)
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0

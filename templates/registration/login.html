@@ -1,0 +1,80 @@
+{% extends 'base_auth.html' %}
+
+{% block title %}Login - Medical Summarizer{% endblock %}
+
+{% block auth_subtitle %}Please sign in to continue{% endblock %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    
+    <!-- Form Errors -->
+    {% if form.errors %}
+    <div class="alert alert-danger mb-3">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <strong>Login failed:</strong>
+        <ul class="mb-0 mt-1">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Username Field -->
+    <div class="mb-3">
+        <label for="id_username" class="form-label fw-bold">
+            <i class="fas fa-user me-1"></i>Username
+        </label>
+        <input type="text" 
+               name="username" 
+               class="form-control form-control-lg {% if form.username.errors %}is-invalid{% endif %}" 
+               id="id_username" 
+               value="{{ form.username.value|default:'' }}"
+               required 
+               autofocus
+               placeholder="Enter your username">
+        {% if form.username.errors %}
+            <div class="invalid-feedback">
+                {{ form.username.errors.0 }}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Password Field -->
+    <div class="mb-4">
+        <label for="id_password" class="form-label fw-bold">
+            <i class="fas fa-lock me-1"></i>Password
+        </label>
+        <input type="password" 
+               name="password" 
+               class="form-control form-control-lg {% if form.password.errors %}is-invalid{% endif %}" 
+               id="id_password" 
+               required
+               placeholder="Enter your password">
+        {% if form.password.errors %}
+            <div class="invalid-feedback">
+                {{ form.password.errors.0 }}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Submit Button -->
+    <div class="d-grid">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+        </button>
+    </div>
+</form>
+
+<!-- Additional Info -->
+<div class="text-center mt-4">
+    <hr class="my-3">
+    <p class="text-muted mb-0">
+        <i class="fas fa-info-circle me-1"></i>
+        Contact your administrator for account access
+    </p>
+</div>
+{% endblock %}

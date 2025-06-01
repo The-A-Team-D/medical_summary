@@ -1,55 +1,49 @@
 {% extends 'base.html' %}
-{% load custom_filters %}
 
-{% block title %}All Summaries - Medical Summarizer{% endblock %}
+{% block title %}Summaries - Medical Summarizer{% endblock %}
 
-{% block page_title %}All Summaries{% endblock %}
+{% block page_title %}Summaries{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
-    <div class="col-12">
+    <div class="col-md-12">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
                 <h3 class="card-title fs-5 fw-bold mb-0">
-                    <i class="fas fa-filter me-2"></i>Filter Summaries
+                    <i class="fas fa-search me-2"></i>Search & Filter
                 </h3>
             </div>
-            <div class="card-body p-4">
+            <div class="card-body">
                 <form method="get" class="row g-3">
-                    <div class="col-md-4">
-                        <label for="search" class="form-label">Search</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-search"></i></span>
-                            <input type="text" class="form-control" id="search" name="search" placeholder="Document name..." value="{{ search_query }}">
-                        </div>
-                    </div>
                     <div class="col-md-3">
                         <label for="project_type" class="form-label">Project Type</label>
-                        <select class="form-select" id="project_type" name="project_type">
-                            <option value="">All Project Types</option>
+                        <select name="project_type" id="project_type" class="form-select">
+                            <option value="">All Projects</option>
                             {% for code, name in project_types %}
-                                <option value="{{ code }}" {% if selected_project_type == code %}selected{% endif %}>{{ name }}</option>
+                            <option value="{{ code }}" {% if selected_project_type == code %}selected{% endif %}>{{ name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label for="status" class="form-label">Status</label>
-                        <select class="form-select" id="status" name="status">
+                        <select name="status" id="status" class="form-select">
                             <option value="">All Statuses</option>
                             {% for code, name in statuses %}
-                                <option value="{{ code }}" {% if selected_status == code %}selected{% endif %}>{{ name }}</option>
+                            <option value="{{ code }}" {% if selected_status == code %}selected{% endif %}>{{ name }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <div class="d-grid gap-2 w-100">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-filter me-2"></i>Apply Filters
-                            </button>
-                            <a href="{% url 'summary-list' %}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times me-2"></i>Clear
-                            </a>
-                        </div>
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">Search by Name</label>
+                        <input type="text" name="search" id="search" class="form-control" value="{{ search_query|default:'' }}" placeholder="Search...">
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter me-2"></i>Apply Filters
+                        </button>
+                        <a href="{% url 'summary-list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo me-2"></i>Reset
+                        </a>
                     </div>
                 </form>
             </div>
@@ -57,167 +51,241 @@
     </div>
 </div>
 
-<div class="row mb-4">
-    <div class="col-12">
+<div class="row">
+    <div class="col-md-12">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h3 class="card-title fs-5 fw-bold mb-0">
-                    <i class="fas fa-list-alt me-2"></i>Summary List
+                    <i class="fas fa-list me-2"></i>Summary List
                 </h3>
                 <a href="{% url 'summarize' %}" class="btn btn-light btn-sm">
-                    <i class="fas fa-plus me-2"></i>Create New
+                    <i class="fas fa-plus me-2"></i>New Summary
                 </a>
             </div>
-            <div class="card-body p-0">
-                {% if summaries %}
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Document Name</th>
-                                    <th>Project Type</th>
-                                    <th>Status</th>
-                                    <th>Created</th>
-                                    <th>Accuracy</th>
-                                    <th class="text-end">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for summary in summaries %}
-                                    <tr>
-                                        <td>
-                                            <a href="{% url 'summary-detail' summary.id %}" class="text-decoration-none text-dark fw-bold">
-                                                {{ summary.document_name }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            {% if summary.project_type == 'ah' %}
-                                                <span class="badge bg-primary">AH PLLC</span>
-                                            {% elif summary.project_type == 'tlc' %}
-                                                <span class="badge bg-success">TLC S PLLC</span>
-                                            {% elif summary.project_type == 'sa' %}
-                                                <span class="badge bg-info">SA PLLC</span>
-                                            {% elif summary.project_type == 'lw' %}
-                                                <span class="badge bg-warning text-dark">LW PLLC</span>
-                                            {% else %}
-                                                <span class="badge bg-secondary">{{ summary.project_type }}</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <span class="badge {% if summary.status == 'completed' %}bg-success{% elif summary.status == 'corrected' %}bg-info{% elif summary.status == 'error' %}bg-danger{% elif summary.status == 'processing' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
-                                                {{ summary.get_status_display }}
-                                            </span>
-                                        </td>
-                                        <td>{{ summary.created_at|date:"M d, Y" }}</td>
-                                        <td>
-                                            {% if summary.accuracy_score %}
-                                                <div class="progress" style="height: 10px;">
-                                                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ summary.accuracy_score|multiply:100|floatformat:2 }}%;" aria-valuenow="{{ summary.accuracy_score|multiply:100|floatformat:2 }}" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                                <span class="small">{{ summary.accuracy_score|multiply:100|floatformat:2 }}%</span>
-                                            {% else %}
-                                                <span class="text-muted">-</span>
-                                            {% endif %}
-                                        </td>
-                                        <td class="text-end">
-                                            <div class="btn-group btn-group-sm">
-                                                <a href="{% url 'summary-detail' summary.id %}" class="btn btn-outline-primary" title="View">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{% url 'summary-feedback' summary.id %}" class="btn btn-outline-primary" title="Edit/Feedback">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="{% url 'summary-download' summary.id %}" class="btn btn-outline-primary" title="Download">
-                                                    <i class="fas fa-download"></i>
-                                                </a>
-                                                <a href="{% url 'summary-delete' summary.id %}" class="btn btn-outline-danger" title="Delete">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </a>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Document/Batch Name</th>
+                                <th>Project</th>
+                                {% if user.is_superuser %}
+                                <th>User</th>
+                                {% endif %}
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                                {% if item.type == 'batch' %}
+                                <!-- Batch Row -->
+                                <tr class="table-light">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <button class="btn btn-sm btn-outline-secondary me-2" type="button" data-bs-toggle="collapse" data-bs-target="#batch-{{ item.data.batch_info.batch_id }}" aria-expanded="false">
+                                                <i class="fas fa-folder"></i>
+                                            </button>
+                                            <div>
+                                                <strong>{{ item.data.batch_info.batch_name }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ item.data.total_count }} files ({{ item.data.completed_count }} completed)</small>
                                             </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    {% if summaries.has_other_pages %}
-                        <div class="pagination-container p-3 border-top">
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination justify-content-center mb-0">
-                                    {% if summaries.has_previous %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_project_type %}&project_type={{ selected_project_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" aria-label="First">
-                                                <span aria-hidden="true">&laquo;&laquo;</span>
-                                            </a>
-                                        </li>
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page={{ summaries.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_project_type %}&project_type={{ selected_project_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                    {% else %}
-                                        <li class="page-item disabled">
-                                            <a class="page-link" href="#" aria-label="First">
-                                                <span aria-hidden="true">&laquo;&laquo;</span>
-                                            </a>
-                                        </li>
-                                        <li class="page-item disabled">
-                                            <a class="page-link" href="#" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">Mixed</span>
+                                    </td>
+                                    {% if user.is_superuser %}
+                                    <td>{{ item.data.batch_info.user.username }}</td>
                                     {% endif %}
-                                    
-                                    {% for i in summaries.paginator.page_range %}
-                                        {% if summaries.number == i %}
-                                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
-                                        {% elif i > summaries.number|add:'-3' and i < summaries.number|add:'3' %}
-                                            <li class="page-item">
-                                                <a class="page-link" href="?page={{ i }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_project_type %}&project_type={{ selected_project_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">{{ i }}</a>
-                                            </li>
+                                    <td>
+                                        {% if item.data.all_completed %}
+                                        <span class="badge bg-success">All Completed</span>
+                                        {% else %}
+                                        <span class="badge bg-warning text-dark">In Progress</span>
                                         {% endif %}
-                                    {% endfor %}
-                                    
-                                    {% if summaries.has_next %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page={{ summaries.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_project_type %}&project_type={{ selected_project_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page={{ summaries.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_project_type %}&project_type={{ selected_project_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" aria-label="Last">
-                                                <span aria-hidden="true">&raquo;&raquo;</span>
-                                            </a>
-                                        </li>
-                                    {% else %}
-                                        <li class="page-item disabled">
-                                            <a class="page-link" href="#" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                        <li class="page-item disabled">
-                                            <a class="page-link" href="#" aria-label="Last">
-                                                <span aria-hidden="true">&raquo;&raquo;</span>
-                                            </a>
-                                        </li>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ item.data.batch_info.created_at|date:"M d, Y H:i" }}</small>
+                                    </td>
+                                    <td>
+                                        {% if item.data.all_completed %}
+                                        <a href="{% url 'batch-download' item.data.batch_info.batch_id %}" class="btn btn-sm btn-success" title="Download All as ZIP">
+                                            <i class="fas fa-download me-1"></i>Download All
+                                        </a>
+                                        {% else %}
+                                        <span class="text-muted">Processing...</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <!-- Collapsible Individual Files -->
+                                <tr>
+                                    <td colspan="{% if user.is_superuser %}6{% else %}5{% endif %}" class="p-0">
+                                        <div class="collapse" id="batch-{{ item.data.batch_info.batch_id }}">
+                                            <div class="card card-body border-0 bg-light">
+                                                <table class="table table-sm mb-0">
+                                                    {% for summary in item.data.summaries %}
+                                                    <tr>
+                                                        <td style="padding-left: 2rem;">
+                                                            <a href="{% url 'summary-detail' summary.id %}" class="text-decoration-none">
+                                                                <i class="fas fa-file-pdf text-danger me-2"></i>{{ summary.document_name }}
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge bg-primary">
+                                                                {% for code, name in project_types %}
+                                                                    {% if code == summary.project_type %}{{ name }}{% endif %}
+                                                                {% endfor %}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            {% if summary.status == 'pending' %}
+                                                            <span class="badge bg-secondary">Pending</span>
+                                                            {% elif summary.status == 'processing' %}
+                                                            <span class="badge bg-warning text-dark">Processing</span>
+                                                            {% elif summary.status == 'completed' %}
+                                                            <span class="badge bg-success">Completed</span>
+                                                            {% elif summary.status == 'corrected' %}
+                                                            <span class="badge bg-info">Corrected</span>
+                                                            {% elif summary.status == 'error' %}
+                                                            <span class="badge bg-danger">Error</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group btn-group-sm">
+                                                                <a href="{% url 'summary-detail' summary.id %}" class="btn btn-outline-primary" title="View">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </a>
+                                                                {% if summary.status == 'completed' %}
+                                                                <a href="{% url 'summary-download' summary.id %}" class="btn btn-outline-success" title="Download">
+                                                                    <i class="fas fa-download"></i>
+                                                                </a>
+                                                                <a href="{% url 'summary-feedback' summary.id %}" class="btn btn-outline-info" title="Provide Feedback">
+                                                                    <i class="fas fa-comment-alt"></i>
+                                                                </a>
+                                                                {% endif %}
+                                                                <a href="{% url 'summary-delete' summary.id %}" class="btn btn-outline-danger" title="Delete">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <!-- Single File Row -->
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'summary-detail' item.data.id %}" class="text-decoration-none">
+                                            <i class="fas fa-file-pdf text-danger me-2"></i>{{ item.data.document_name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">
+                                            {% for code, name in project_types %}
+                                                {% if code == item.data.project_type %}{{ name }}{% endif %}
+                                            {% endfor %}
+                                        </span>
+                                    </td>
+                                    {% if user.is_superuser %}
+                                    <td>{{ item.data.user.username }}</td>
                                     {% endif %}
-                                </ul>
-                            </nav>
-                            <p class="text-center text-muted small mt-2 mb-0">
-                                Showing {{ summaries.start_index }} to {{ summaries.end_index }} of {{ summaries.paginator.count }} summaries
-                            </p>
-                        </div>
-                    {% endif %}
-                {% else %}
-                    <div class="text-center py-5">
-                        <i class="fas fa-file-alt fa-5x text-muted mb-3"></i>
-                        <h4 class="text-muted">No Summaries Found</h4>
-                        <p class="text-muted mb-4">There are no summaries matching your filters.</p>
-                        <a href="{% url 'summarize' %}" class="btn btn-primary btn-lg px-4">
-                            <i class="fas fa-plus me-2"></i>Create New Summary
-                        </a>
-                    </div>
+                                    <td>
+                                        {% if item.data.status == 'pending' %}
+                                        <span class="badge bg-secondary">Pending</span>
+                                        {% elif item.data.status == 'processing' %}
+                                        <span class="badge bg-warning text-dark">Processing</span>
+                                        {% elif item.data.status == 'completed' %}
+                                        <span class="badge bg-success">Completed</span>
+                                        {% elif item.data.status == 'corrected' %}
+                                        <span class="badge bg-info">Corrected</span>
+                                        {% elif item.data.status == 'error' %}
+                                        <span class="badge bg-danger">Error</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ item.data.created_at|date:"M d, Y H:i" }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'summary-detail' item.data.id %}" class="btn btn-sm btn-outline-primary" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if item.data.status == 'completed' %}
+                                            <a href="{% url 'summary-download' item.data.id %}" class="btn btn-sm btn-outline-success" title="Download">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            <a href="{% url 'summary-feedback' item.data.id %}" class="btn btn-sm btn-outline-info" title="Provide Feedback">
+                                                <i class="fas fa-comment-alt"></i>
+                                            </a>
+                                            {% endif %}
+                                            <a href="{% url 'summary-delete' item.data.id %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% empty %}
+                            <tr>
+                                <td colspan="{% if user.is_superuser %}6{% else %}5{% endif %}" class="text-center">
+                                    <div class="py-4">
+                                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                        <p class="mb-0">No summaries found. <a href="{% url 'summarize' %}">Create a new summary</a>.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if items.paginator.num_pages > 1 %}
+                <nav aria-label="Summary pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if items.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if selected_project_type %}&project_type={{ selected_project_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ items.previous_page_number }}{% if selected_project_type %}&project_type={{ selected_project_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in items.paginator.page_range %}
+                            {% if items.number == num %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                            {% elif num > items.number|add:'-3' and num < items.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if selected_project_type %}&project_type={{ selected_project_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if items.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ items.next_page_number }}{% if selected_project_type %}&project_type={{ selected_project_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ items.paginator.num_pages }}{% if selected_project_type %}&project_type={{ selected_project_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
                 {% endif %}
             </div>
         </div>

@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
 import os
+import uuid
 
 def example_upload_path(instance, filename):
     """Generate upload path for document examples"""
@@ -49,28 +51,42 @@ class DocumentExample(models.Model):
         verbose_name_plural = 'Document Examples'
 
 class Summary(models.Model):
-    """Summary of a medical document"""
-    STATUS_CHOICES = [
+    STATUS_CHOICES = (
         ('pending', 'Pending'),
         ('processing', 'Processing'),
         ('completed', 'Completed'),
         ('corrected', 'Corrected'),
         ('error', 'Error'),
-    ]
+    )
     
+    PROJECT_CHOICES = (
+        ('ah', 'AH PLLC'),
+        ('tlc', 'TLC S PLLC'),
+        ('sa', 'SA PLLC'),
+        ('lw', 'LW PLLC'),
+    )
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='summaries', null=True, blank=True)
     document_name = models.CharField(max_length=255)
-    pdf_file = models.FileField(upload_to=summary_upload_path)
-    project_type = models.CharField(max_length=50)
-    pdf_password = models.CharField(max_length=100, blank=True)
-    summary_text = models.TextField(blank=True)
-    original_text = models.TextField(blank=True)
-    corrected_text = models.TextField(blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    project_type = models.CharField(max_length=10, choices=PROJECT_CHOICES)
+    pdf_file = models.FileField(upload_to='pdfs/')
+    pdf_password = models.CharField(max_length=50, blank=True, null=True)
+    original_text = models.TextField(blank=True, null=True)
+    summary_text = models.TextField(blank=True, null=True)
+    corrected_text = models.TextField(blank=True, null=True)
     accuracy_score = models.FloatField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    # New batch-related fields
+    batch_id = models.UUIDField(default=uuid.uuid4, db_index=True, help_text="Groups files uploaded together")
+    batch_name = models.CharField(max_length=255, blank=True, null=True, help_text="Name for the batch of files")
+    is_batch = models.BooleanField(default=False, help_text="True if this was part of a multi-file upload")
+    
     def __str__(self):
+        if self.is_batch and self.batch_name:
+            return f"{self.batch_name} - {self.document_name}"
         return self.document_name
     
     def get_absolute_url(self):
